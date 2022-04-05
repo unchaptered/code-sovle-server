@@ -11,7 +11,7 @@ const dbConfig = config.get('database');
 
 @Module({
   imports: [
-    MongooseModule.forRoot(dbConfig.url),
+    MongooseModule.forRoot(dbConfig.url || process.env.MONGO_URL ),
     ConfigModule.forRoot({
       envFilePath: ['default.yaml', 'development.yaml', 'deployment.yaml','test.yaml'],
       ignoreEnvFile:true
