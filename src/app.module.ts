@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
+
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { throttlerAsyncOptions } from './secure/throttler.async.options';
 
 @Module({
   imports: [
@@ -12,16 +15,16 @@ import { AuthModule } from './auth/auth.module';
       envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
       ignoreEnvFile: process.env.NODE_ENV === 'prod',
     }),
-    MongooseModule.forRoot(process.env.ATLAS_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }),
-    ThrottlerModule.forRoot({
-      ttl: 0.01, limit: 10
-    }),
+    MongooseModule.forRoot(process.env.ATLAS_URL),
+    ThrottlerModule.forRootAsync(throttlerAsyncOptions),
     AuthModule
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
+  ],
 })
 export class AppModule {}

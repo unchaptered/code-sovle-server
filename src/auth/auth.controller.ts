@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Param, ParseIntPipe, Post, Query, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { RegexUtility } from 'src/utility/regex.utility';
 import { AuthService } from './auth.service';
 
@@ -9,6 +9,7 @@ import UserProfile from './classes/user.profile';
 import { UserSortValidatioPipe } from './pipe/user.sort.pipe';
 
 import { UserSort } from './types/user.sort.enum';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 
 /**
@@ -27,6 +28,7 @@ import { UserSort } from './types/user.sort.enum';
  * @function findUserByEmail()
  */
 @Controller('auth')
+@UseGuards(ThrottlerGuard)
 export class AuthController {
     
     constructor( private authService: AuthService )  {}
