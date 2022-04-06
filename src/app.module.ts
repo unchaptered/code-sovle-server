@@ -1,20 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-
-import { AuthModule } from './auth/auth.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
-
-import * as config from 'config';
-
-const dbConfig = config.get('database');
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(dbConfig.url || process.env.MONGO_URL ),
     ConfigModule.forRoot({
-      envFilePath: ['default.yaml', 'development.yaml', 'deployment.yaml','test.yaml'],
-      ignoreEnvFile:true
+      isGlobal:true,
+      envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
+      ignoreEnvFile: process.env.NODE_ENV === 'prod',
+    }),
+    MongooseModule.forRoot(process.env.ATLAS_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }),
+    ThrottlerModule.forRoot({
+      ttl: 0.01, limit: 10
     }),
     AuthModule
   ],

@@ -12,9 +12,10 @@ async function bootstrap() {
   // const port = await config.get('server').port;
   
   app.enableCors();
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(+process.env.PORT || 3000);
 }
 bootstrap();
+
 
   // const authBuilderOption = new DocumentBuilder()
   //   .setTitle('Code Solve')
