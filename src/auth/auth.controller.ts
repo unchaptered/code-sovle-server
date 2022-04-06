@@ -6,7 +6,7 @@ import JoinDto from './dto/join.dto';
 import LoginDto from './dto/login.dto';
 
 import UserProfile from './classes/user.profile';
-import { UserSortValidatioPipe } from './pipe/user.sort.pipe';
+import UserSortValidatioPipe from './pipe/user.sort.pipe';
 
 import { UserSort } from './types/user.sort.enum';
 import { ThrottlerGuard } from '@nestjs/throttler';

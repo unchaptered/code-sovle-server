@@ -10,7 +10,7 @@ import { UserSort } from '../types/user.sort.enum';
  * @function isExsistentUserSort UserSortArray 에서 동일한 문자열을 찾고 Boolean(기댓값:true)을 반환합니다.
  */
 @Injectable()
-export class UserSortValidatioPipe implements PipeTransform {
+export default class UserSortValidatioPipe implements PipeTransform {
 
     readonly UserSortArray = [
         UserSort.ADMIN,

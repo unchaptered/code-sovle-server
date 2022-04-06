@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { throttlerAsyncOptions } from './secure/throttler.async.options';
+import { HelloController } from './hello/hello.controller';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { throttlerAsyncOptions } from './secure/throttler.async.options';
     ThrottlerModule.forRootAsync(throttlerAsyncOptions),
     AuthModule
   ],
-  controllers: [AppController],
+  controllers: [AppController, HelloController],
   providers: [
     {
       provide: APP_GUARD,

@@ -8,7 +8,7 @@ import { IsEmail, IsString } from "class-validator";
  * @member password 문자열로 유저의 비밀번호를 타나냅니다.
  */
 @Schema()
-export class LoginDto {
+export default class LoginDto {
 
     @IsEmail()
     @Prop({ type:String, unique:true, required:true })
@@ -20,4 +20,3 @@ export class LoginDto {
 
 }
 
-export default LoginDto;

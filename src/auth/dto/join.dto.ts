@@ -13,7 +13,7 @@ import LoginDto from './login.dto';
  * @member password 문자열로 유저의 비밀번호를 타나냅니다.
  */
 @Schema()
-class JoinDto extends LoginDto {
+export default class JoinDto extends LoginDto {
     
     @IsString()
     @Prop({ type:String, required:true })
@@ -21,4 +21,3 @@ class JoinDto extends LoginDto {
 
 }
 
-export default JoinDto;
