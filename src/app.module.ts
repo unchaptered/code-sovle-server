@@ -6,8 +6,6 @@ import { AuthModule } from './auth/auth.module';
 
 import * as config from 'config';
 
-const dbConfig = config.get('database');
-
 @Module({
   imports: [
     MongooseModule.forRoot( process.env.ATLAS_URL ),
