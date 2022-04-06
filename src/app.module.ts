@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { AuthModule } from './auth/auth.module';
-import { AppController } from './app.controller';
 
 import * as config from 'config';
 
@@ -22,7 +21,7 @@ const dbConfig = config.get('database');
     }),
     AuthModule
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}
