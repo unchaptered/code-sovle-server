@@ -1,15 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
-import * as config from 'config';
-
-// import { SwaggerModule, DocumentBuilder, SwaggerDocumentOptions, ExpressSwaggerCustomOptions } from '@nestjs/swagger';
-import { AuthModule } from './auth/auth.module';
+// Security
+import helmet from 'helmet';
+import { helmetOptions } from './secure/hemlet.options';
+import { corsOption } from './secure/cors.options';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  app.enableCors();
+  // app.use(helmet.noSniff()); // Protector about hack
+  // app.use(helmet.hidePoweredBy()); // Hide about framework
+  // app.use(helmet.xssFilter()); // Prevent about error
+  // app.use(helmet(helmetOptions)); // Secure Options
+
+  // app.enableCors(corsOption); // CORS Pretector
+
   await app.listen(+process.env.PORT || 3000);
 }
 bootstrap();
