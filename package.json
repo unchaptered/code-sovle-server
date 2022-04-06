@@ -34,6 +34,7 @@
     "config": "^3.3.7",
     "cross-env": "^7.0.3",
     "env": "0.0.2",
+    "helmet": "^5.0.2",
     "mongoose": "^6.2.10",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
