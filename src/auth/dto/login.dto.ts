@@ -1,5 +1,5 @@
 import { Prop, Schema } from "@nestjs/mongoose";
-import { IsEmail, IsString } from "class-validator";
+import { IsEmail, IsString, MaxLength, MinLength } from "class-validator";
 
 
 /** 
@@ -15,8 +15,9 @@ export default class LoginDto {
     email: string;
 
     @IsString()
-    @Prop({ type:String, required:true })
+    @MinLength(8)
+    @MaxLength(20)
+    @Prop({ type:String, required:true, minlength:8, maxlength:20 })
     password: string;
 
 }
-

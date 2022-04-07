@@ -7,8 +7,10 @@
  * @value 'MENTO'
  * @value 'MENTEE'
  */
-export enum UserSort {
+enum UserSort {
     ADMIN = 'ADMIN',
     MENTO = 'MENTO',
     MENTEE = 'MENTEE'
 };
+
+export default UserSort;

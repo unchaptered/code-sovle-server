@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { UserSort } from '../types/user.sort.enum';
+import UserSort from '../types/user.sort.enum';
 
 import SnsConnection from '../classes/sns.connection';
 
 import EmailAuthentication from '../classes/email.auth';
-import { IsOptional } from 'class-validator';
+import { IsArray, IsOptional } from 'class-validator';
 import JoinDto from '../dto/join.dto';
 
 /**
@@ -32,7 +32,8 @@ import JoinDto from '../dto/join.dto';
 export class User extends JoinDto {
     
     // 기본값 설정
-    @Prop({ type:String, required:true})
+    @Prop({ type:String, enum:[ UserSort.ADMIN, UserSort.MENTEE, UserSort.MENTO ],
+        default:UserSort.MENTEE ,required:true })
     sort: UserSort;
 
     // DTO 에서 email, username, password 를 받아옴
@@ -41,15 +42,15 @@ export class User extends JoinDto {
 
     @Prop([String])
     @IsOptional()
-    ip_connections?: string[];
+    ipConnection?: string[];
 
     @Prop([SnsConnection])
     @IsOptional()
-    sns_connections?: SnsConnection[];
+    snsConnection?: SnsConnection[];
 
     @Prop([EmailAuthentication])
     @IsOptional()
-    email_authentication?: EmailAuthentication[];
+    emailAuthentication?: EmailAuthentication[];
     
 }
 

@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 
 import UserProfile from "./user.profile";
-import { UserSort } from "../types/user.sort.enum";
+import UserSort from "../types/user.sort.enum";
 import { BadGatewayException, BadRequestException } from '@nestjs/common';
 
 describe('UserProfile Test', () => {

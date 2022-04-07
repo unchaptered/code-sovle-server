@@ -3,7 +3,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
 
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+
+import { UserService } from './user.service';
+import { JwtService } from './jwt.service';
 
 
 /**
@@ -13,7 +15,7 @@ import { AuthService } from './auth.service';
  * @import MongooseModule.forFeature([]); // UserModel 생성
  * 
  * @AuthController mapping
- * @AuthService inejection
+ * @UserService inejection
  */
 @Module({
   imports: [
@@ -27,6 +29,6 @@ import { AuthService } from './auth.service';
     MongooseModule.forFeature([ { name: User.name, schema: UserSchema } ])
   ],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [UserService, JwtService]
 })
 export class AuthModule {}

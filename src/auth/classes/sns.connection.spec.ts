@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 
 import SnsConnection from "./sns.connection";
-import { TokenSort } from "../types/token.sort.enum";
+import TokenSort from "../types/token.sort.enum";
 
 describe('EmailAuthentication Test', () => {
 

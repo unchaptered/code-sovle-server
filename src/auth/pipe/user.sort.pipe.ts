@@ -1,5 +1,5 @@
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { UserSort } from '../types/user.sort.enum';
+import UserSort from '../types/user.sort.enum';
 
 
 /**

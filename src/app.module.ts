@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { throttlerAsyncOptions } from './secure/throttler.async.options';
-import { HelloController } from './hello/hello.controller';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -18,9 +17,10 @@ import { HelloController } from './hello/hello.controller';
     }),
     MongooseModule.forRoot(process.env.ATLAS_URL),
     ThrottlerModule.forRootAsync(throttlerAsyncOptions),
-    AuthModule
+    AuthModule,
+    RoomModule
   ],
-  controllers: [AppController, HelloController],
+  controllers: [],
   providers: [
     {
       provide: APP_GUARD,

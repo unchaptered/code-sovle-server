@@ -1,5 +1,5 @@
 import { Prop, Schema } from "@nestjs/mongoose";
-import { IsString } from "class-validator";
+import { IsString, MaxLength, MinLength } from "class-validator";
 
 import LoginDto from './login.dto';
 
@@ -16,7 +16,9 @@ import LoginDto from './login.dto';
 export default class JoinDto extends LoginDto {
     
     @IsString()
-    @Prop({ type:String, required:true })
+    @MinLength(3)
+    @MaxLength(20)
+    @Prop({ type:String, required:true, minlength:3, maxlength:20 })
     username: string;
 
 }

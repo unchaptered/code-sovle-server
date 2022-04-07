@@ -1,5 +1,5 @@
 import { Model, Connection } from 'mongoose';
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import { User, UserDocument } from './schema/user.schema';
 
@@ -7,13 +7,13 @@ import JoinDto from './dto/join.dto';
 import LoginDto from './dto/login.dto';
 import UserProfile from './classes/user.profile';
 
-import { UserSort } from './types/user.sort.enum';
+import UserSort from './types/user.sort.enum';
 
 /**
  * 
  */
 @Injectable()
-export class AuthService {
+export class UserService {
 
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
@@ -42,6 +42,8 @@ export class AuthService {
     async login(sort:UserSort, loginDto: LoginDto): Promise<UserProfile> {
         const { email, password } = loginDto;
         const userDB = await this.userModel.findOne({ email, password });
+        if (userDB === null) throw new NotFoundException(`The ${email} isn't exists`);
+
         return new UserProfile(userDB);
     }
 

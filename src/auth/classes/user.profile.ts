@@ -1,5 +1,5 @@
 import { BadRequestException } from "@nestjs/common";
-import { UserSort } from "../types/user.sort.enum";
+import UserSort from "../types/user.sort.enum";
 
 /** UserModel 에 내장 문서의 형태로 저장됩니다.
  * 

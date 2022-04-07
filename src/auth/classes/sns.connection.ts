@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsString } from "class-validator";
-import { TokenSort } from "../types/token.sort.enum";
+import TokenSort from "../types/token.sort.enum";
 
 /** UserModel 에 내장 문서의 형태로 저장됩니다.
  * 

@@ -4,9 +4,10 @@
  * @value  'NAVER'
  * @value  'GITHUB'
  */
-export enum TokenSort {
+enum TokenSort {
     GOOGLE = 'GOOGLE',
     KAKAO = 'KAKAO',
     NAVER = 'NAVER',
     GITHUB = 'GITHUB'
 }
+export default TokenSort;

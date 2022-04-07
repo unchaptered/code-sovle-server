@@ -1,15 +1,16 @@
-import { BadRequestException, Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Logger, Param, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
+
 import { RegexUtility } from 'src/utility/regex.utility';
-import { AuthService } from './auth.service';
+
+import { UserService } from './user.service';
+import { JwtService } from './jwt.service';
 
 import JoinDto from './dto/join.dto';
 import LoginDto from './dto/login.dto';
-
+import UserSort from './types/user.sort.enum';
 import UserProfile from './classes/user.profile';
 import UserSortValidatioPipe from './pipe/user.sort.pipe';
-
-import { UserSort } from './types/user.sort.enum';
-import { ThrottlerGuard } from '@nestjs/throttler';
 
 
 /**
@@ -30,57 +31,29 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 @Controller('auth')
 @UseGuards(ThrottlerGuard)
 export class AuthController {
-    
-    constructor( private authService: AuthService )  {}
 
-    /**
-     * @UserSortValidationPipe 커스텀 파이프라인을 이용해서 유효성 검사를 진행한다.
-     * @ValidationPipe class-validator 기능을 이용해서 유효성 검사를 진행한다.
-     * 
-     * @param sort 열거형 UserSort
-     * @param joinDto 클래스 JoinDto
-     * @returns Promise<UserProfile\>
-     */
-    @Post('/')
-    login( @Body('sort', UserSortValidatioPipe) sort: UserSort, @Body(ValidationPipe) joinDto: JoinDto ): Promise<UserProfile> {
-        return this.authService.join(sort, joinDto);
+    private authLogger: Logger = new Logger('AuthLogger');
+
+    constructor(
+        private userService: UserService,
+        private jwtService: JwtService
+    ) {}
+
+
+    @Post('/join')
+    // @ApiCreatedResponse({ description: 'The record has been successfully created.'})
+    // @ApiForbiddenResponse({ description: 'Forbidden.'})
+    join( @Body('sort', UserSortValidatioPipe) sort: UserSort, @Body(ValidationPipe) joinDto: JoinDto ): Promise<UserProfile> {
+        this.authLogger.log(`Client try to join ${sort} ${JSON.stringify(joinDto)}`);
+        return this.userService.join(sort, joinDto);
     }
 
-    /**
-     * @UserSortValidatioPipe 커스텀 파이프라인을 이용해서 유효성 검사를 진행한다.
-     * @ValidationPipe class-validator 기능을 이용해서 유효성 검사를 진행한다.
-     * 
-     * @param sort 열거형 UserSort, UserSortValidatioPipe 을 이용한다.
-     * @param loginDto 클래스 LoginDto, ValidationPipe 와 class-validator 를 이용한다.
-     * @returns Promise<UserProfile\>
-     */
-    @Get('/')
-    join( @Body('sort', UserSortValidatioPipe) sort: UserSort, @Body(ValidationPipe) loginDto: LoginDto ): Promise<UserProfile> {
-        return this.authService.login(sort, loginDto);
+    @Post('/login')
+    login( @Body('sort', UserSortValidatioPipe) sort: UserSort, @Body(ValidationPipe) loginDto: LoginDto ): Promise<UserProfile> {
+        this.authLogger.log(`Client try to login ${sort} ${JSON.stringify(loginDto)}`);
+        return this.userService.login(sort, loginDto);
     }
 
-    /**
-     * @RegexUtiltiy 정적으로 생성된 이메일 유효성 검사 정규식으로 유효성 검사를 진행한다.
-     * 
-     * @param email 문자열 email, RegexUtiltiy 을 이용한다.
-     * @returns Promise<Boolean\>
-     */
-    @Get('/:email')
-    findUserByEmail(@Param('email') email: string): Promise<Boolean> {
-        const result = email.match(RegexUtility.emailRegex);
-        if (result === null) throw new BadRequestException(`${email} isnt' in the Email Format`);
-        return this.authService.findUserByEmail(email);
-    }
-
-    /**
-     * 동적 쿼리문을 실행하기 앞서, 유저
-     * 
-     * @ParseIntPipe nest 내장 모듈로 숫자형인지를 확인한다.
-     * 
-     * @param sort 열거형 UserSort 을 받고 유효성 검사를 진행하고, 길이 0~2 사이의 배열로 만들어서 Service 에 전달한다.
-     * @param limit 숫자를 받고 ParseIntPipe 를 실행하고, 1부터 30까지의 숫자만 받는 것은 Service 에서 처리한다.
-     * @returns 
-     */
     @Get('/list')
     getAllUserByOptions(
         @Query('sort') sort: UserSort[], @Query('limit', ParseIntPipe) limit: number ): Promise<UserProfile[]> {
@@ -102,8 +75,14 @@ export class AuthController {
             }
         } else {}
         
-        return this.authService.getAllUserByOptions(sort, limit);
+        return this.userService.getAllUserByOptions(sort, limit);
     }
-    
+
+    @Get('/:email')
+    findUserByEmail(@Param('email') email: string): Promise<Boolean> {
+        const result = email.match(RegexUtility.emailRegex);
+        if (result === null) throw new BadRequestException(`${email} isnt' in the Email Format`);
+        return this.userService.findUserByEmail(email);
+    }
 }
 
