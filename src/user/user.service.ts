@@ -8,6 +8,8 @@ import LoginDto from './dto/login.dto';
 import UserProfile from './classes/user.profile';
 
 import UserSort from './types/user.sort.enum';
+import UserProfileDetailDto from 'src/auth/dto/user.profile.detail.dto';
+import UserProfileDto from 'src/auth/dto/user.profile.dto';
 
 /**
  * 
@@ -93,7 +95,20 @@ export class UserService {
         return users;
     }
 
-    async createAccount() {}
-    async accessAccount() {}
+    async createAccount(userProfileDetailDto: UserProfileDetailDto): Promise<UserDocument> {
+        return await this.userModel.create({...userProfileDetailDto});
+    }
+    async deleteAccount(userProfileDto: UserProfileDto): Promise<UserDocument> {
+        return await this.userModel.findOneAndDelete({ ...userProfileDto });
+    }
+    async createAccountToken(userProfileDto: UserProfileDto): Promise<UserDocument> {
+        return await this.userModel.findOne({ ...userProfileDto });
+    }
 
+    async patchAccountSort(sort: UserSort, userProfileDto: UserProfileDto) {
+        return await this.userModel.findOneAndUpdate({ ...userProfileDto }, { sort });
+    }
+    async patchAccountUsername(username: string, userProfileDto: UserProfileDto){
+        return await this.userModel.findOneAndUpdate({ ...userProfileDto }, { username });  
+    }
 }
