@@ -20,13 +20,7 @@ SNS 계정으로 로그인하고 손쉽게 이용해보세요!
 
 <hr>
 
-## Structure with History
-
-**의사결정 이유와 프로젝트 구조에 대한 설명입니다.**
-
-**이보다 상세하거나 다양한 내용은 다음 파일을 참고해주세요.**
-
-**에러 이슈 Project Issue.md / 기술 항목 Project Technology**
+## Structure
 
 본 서비스는 다음과 같이 빌드업되어 있습니다.
 
@@ -136,3 +130,12 @@ TailwindCSS
 1. Template [HyperUI](https://www.hyperui.dev/)
 2. Settings [Blog Post](https://intrepidgeeks.com/tutorial/how-to-set-sveltekit-using-tailwind-css)
 3. Settings+ [Blog Post](https://blog.rhostem.com/posts/2021-06-05-tailwind-css)
+
+<hr>
+
+## Heroku
+
+```
+heroku login		헤로쿠 로그인
+heroku local web	헤코루 로컬 빌드업(테스트용)
+```
