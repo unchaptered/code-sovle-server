@@ -8,6 +8,7 @@ import { throttlerAsyncOptions } from './secure/throttler.async.options';
 import { RoomModule } from './room/room.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { FormatModule } from './format/format.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { UserModule } from './user/user.module';
     MongooseModule.forRoot(process.env.ATLAS_URL),
     ThrottlerModule.forRootAsync(throttlerAsyncOptions),
 
-    AuthModule, UserModule, RoomModule,
+    AuthModule, UserModule, RoomModule, FormatModule,
   ],
   controllers: [],
   providers: [
