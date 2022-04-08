@@ -6,7 +6,7 @@ import { ThrottlerAsyncOptions } from '@nestjs/throttler';
 export const throttlerAsyncOptions: ThrottlerAsyncOptions = {
     imports: [ConfigModule],
     inject: [ConfigService],
-    useFactory: (confgi: ConfigService) => ({
+    useFactory: (config: ConfigService) => ({
       ttl: +process.env.SECURE_THROTTLER_TTL,
       limit: +process.env.SECURE_THROTTLER_LIMIT
     })

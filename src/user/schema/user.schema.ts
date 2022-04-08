@@ -54,7 +54,7 @@ export class User extends JoinDto {
     
 }
 
-export type UserDocument = User & Document;
+export type UserDocument = User & Document & { _id: Object };
 
 /**
  * 아래 내용으로 스키마를 만들어냅니다.
