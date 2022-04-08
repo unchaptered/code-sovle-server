@@ -1,15 +1,15 @@
 import { Model } from 'mongoose';
+import { JwtService } from "@nestjs/jwt";
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 
-import { User, UserDocument } from "src/schema/user.shcmea";
+import { AuthRepository } from './auth.repository';
+
+import { User, UserDocument } from "src/schema/user.schema";
 
 import UserSort from "./dto/user.sort.enum";
 import UserProfileDto from "./dto/user.profile.dto";
 import UserProfileDetailDto from "./dto/user.profile.detail.dto";
-
-import { JwtService } from "@nestjs/jwt";
-import { AuthRepository } from './auth.repository';
 
 @Injectable()
 export class AuthService {
@@ -52,7 +52,24 @@ export class AuthService {
         const { _id, sort, username:usernameVal } = result;
         return { _id, sort, username:usernameVal };
     }
+    
+    async patchAccountDescription(description: string, bearerToken: string): Promise<Object> {
 
-    async test() {
+        const user: any = this.jwtService.decode(bearerToken);
+
+        const result = await this.authRepository.patchAccountDescription(description, user._id);
+        const { _id, sort, username:usernameVal } = result;
+        return { _id, sort, username:usernameVal };
+        
     }
+
+    async getAccountProfile(_id:string): Promise<Object> {
+        const result =  this.authRepository.getAccountProfile(_id);
+
+        console.log(result);
+
+        return result;
+        
+    }
+
 }

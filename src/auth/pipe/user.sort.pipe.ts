@@ -21,7 +21,7 @@ export default class UserSortValidatioPipe implements PipeTransform {
     transform(value: any): string {
         
         const valueString = (""+value).toUpperCase();
-        if (this.isExsistentUserSort(valueString)) throw new BadRequestException(`${valueString} isnt' in the UserSort options`);
+        if (this.isExsistentUserSort(valueString)) throw new BadRequestException(`This ${valueString} isnt' in the UserSort options`);
 
         return valueString;
 

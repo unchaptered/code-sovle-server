@@ -1,7 +1,8 @@
-import { Model, Connection } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { User, UserDocument } from 'src/schema/user.shcmea';
+import { Model, Connection } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+
+import { User, UserDocument } from 'src/schema/user.schema';
 
 import UserSort from './dto/user.sort.enum';
 import UserProfileDto from './dto/user.profile.dto';
@@ -32,5 +33,13 @@ export class AuthRepository {
     /** 토큰 필요 */
     async patchAccountUsername(username: string, _id: string): Promise<UserDocument> {
         return await this.userModel.findByIdAndUpdate(_id, { username }, { new: true }).select('sort username');
+    }
+    /** 토큰 필요 */
+    async patchAccountDescription(description: string, _id: string): Promise<UserDocument> {
+        return await this.userModel.findByIdAndUpdate(_id, { description }, { new:true }).select('sort username');
+    }
+
+    async getAccountProfile(_id: string): Promise<UserDocument> {
+        return await this.userModel.findById(_id).select('sort username description');
     }
 }

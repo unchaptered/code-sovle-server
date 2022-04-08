@@ -1,6 +1,6 @@
 import {
     Controller, Get, Post, Patch, Delete,
-    Body, Logger, Query, UseGuards, Headers
+    Body, Logger, Query, UseGuards, Headers, Param
 } from '@nestjs/common';
 
 // dependency inejection
@@ -8,6 +8,7 @@ import {
 import { AuthService } from './auth.service';
 
 // dto
+
 import UserSort from './dto/user.sort.enum';
 import UserProfileDto from './dto/user.profile.dto';
 import UserProfileDetailDto from './dto/user.profile.detail.dto';
@@ -29,8 +30,11 @@ import { ConfigService } from '@nestjs/config';
 // guard
 
 import { extractTokenFromBearer } from 'src/token/jwt.extract';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import DescriptionValidationPipe from './pipe/user.description.pipe';
 
 @Controller('auth')
+@UseGuards(ThrottlerGuard)
 export class AuthController {
 
     private authLogger: Logger = new Logger('AuthController');
@@ -70,26 +74,40 @@ export class AuthController {
 
     @UseGuards(JwtGuard)
     @Patch('/account/sort')
-    patchAccountSort( @Headers('authorization') bearerToken: Object, @Query('set', UserSortValidatioPipe) sort: UserSort ): Object {
+    patchAccountSort( @Query('set', UserSortValidatioPipe) sort: UserSort, @Headers('authorization') bearerToken: Object ): Object {
 
         const token = extractTokenFromBearer(bearerToken);
-        this.authLogger.log(`patchAccountSort ${JSON.stringify({sort})} tokenizer`);
+        this.authLogger.log(`patchAccountSort by token`);
         return this.authService.patchAccountSort(sort, token);
 
     }
     
     @UseGuards(JwtGuard)
     @Patch('/account/username')
-    patchAccountUsername( @Headers('authorization') bearerToken: Object, @Query('set', UsernameValidationPipe) username: string ): Object {
+    patchAccountUsername( @Query('set', UsernameValidationPipe) username: string, @Headers('authorization') bearerToken: Object): Object {
 
         const token = extractTokenFromBearer(bearerToken);
-        this.authLogger.log(`patchAccountUsername ${JSON.stringify({username})} tokenizer`);
+        this.authLogger.log(`patchAccountUsername by token`);
         return this.authService.patchAccountUsername(username, token);
         
     }
 
-    @Post('/test')
-    test() {
-        this.authService.test();
+    @UseGuards(JwtGuard)
+    @Patch('/account/description')
+    patchAccountDescription( @Body('description', DescriptionValidationPipe) description: string, @Headers('authorization') bearerToken: Object ): Object {
+        
+        const token = extractTokenFromBearer(bearerToken);
+        this.authLogger.log(`patchAccountDescription by token`);
+        return this.authService.patchAccountDescription(description, token);
+
     }
+
+    @UseGuards(JwtGuard)
+    @Get('/account/:_id')
+    getAccountProfile( @Param() _id: string ) {
+
+        return this.authService.getAccountProfile(_id);
+        
+    }
+
 }

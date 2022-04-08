@@ -6,7 +6,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { throttlerAsyncOptions } from './setting/throttler.async.options';
+
 import { AuthModule } from './auth/auth.module';
+import { RoomModule } from './room/room.module';
+import { JwtStrategy } from './token/jwt.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtModuleAsyncOptions } from './setting/jwt.async.options';
 
 @Module({
   imports: [
@@ -17,9 +22,10 @@ import { AuthModule } from './auth/auth.module';
     }),
     MongooseModule.forRoot(process.env.ATLAS_URL),
     ThrottlerModule.forRootAsync(throttlerAsyncOptions),
-    AuthModule
+
+    // Domain
+    AuthModule, RoomModule, JwtStrategy
   ],
-  controllers: [],
   providers: [
     {
       provide: APP_GUARD,
