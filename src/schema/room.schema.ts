@@ -12,7 +12,7 @@ export class Room {
 
     // Owner Information Denomalize
 
-    @Prop({ type:String, ref: 'User'})
+    @Prop({ type:mongoose.Types.ObjectId, ref: 'User'})
     ownerId: string;
 
     @Prop({ type:String, minlength:3, maxlength:20})
@@ -22,12 +22,17 @@ export class Room {
     ownerDescription?: string;
 
     // Members Informations
+    @Prop([{ type:mongoose.Types.ObjectId, ref: 'User' }])
+    userIdList?: string[];
+    @Prop({ type:String })
+    userNameList?: string[];
 
     // 보낸 초대장 (오너가 신청, 일반 멤버들이 신청), 안에는 _id 들어있음
-    @Prop([{ type:mongoose.Types.ObjectId, ref:'User'}])
-    requestInviteCardList?: string[];
+    @Prop([{ type:mongoose.Types.ObjectId, ref: 'User'}])
+    inviteCardList?: string[];
+    
     @Prop([String])
-    requestInviteNameList?: string[]; // 신청자 명단
+    inviteNameList?: string[]; // 신청자 명단
 
     // 후순위 개발항목
 

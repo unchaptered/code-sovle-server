@@ -1,9 +1,11 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { Model, Connection } from 'mongoose';
+
+import { Model, Connection, Types } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { User, UserDocument } from 'src/schema/user.schema';
 import { Room, RoomDocument } from 'src/schema/room.schema';
+import UserCardDto from 'src/auth/dto/user.card.dto';
 
 @Injectable()
 export class RoomRepository {
@@ -16,6 +18,12 @@ export class RoomRepository {
 
     async getRoomList(): Promise<RoomDocument[]> {
         return await this.roomModel.find().limit(10);
+    }
+
+    async getRoomData(_id: string) {
+        return await this.roomModel.findById(_id)
+            .populate({ path: 'inviteCardList', model: 'User', select: '_id sort username'})
+            .select('_id title ownerId ownerName userIdList inviteCardList createdAt updatedAt');
     }
     async postRoom(user: any, title: string): Promise<RoomDocument> {
         
@@ -66,6 +74,33 @@ export class RoomRepository {
         }
 
         // return roomDB;
+    }
+
+    async postInviteCard(tokenId: string, roomId: string, users: string[]): Promise<RoomDocument> {
+
+        const roomExists = await this.roomModel.exists({ _id:roomId, ownerId:tokenId });
+        if (roomExists === null) throw new ForbiddenException('No access right');
+        
+        const [ _users, room ] = await Promise.all([
+            (async ()=>{
+                 const userList = await this.userModel.find({ _id: { $in: [ ...users.map(val=>new Types.ObjectId(val)) ] }});
+                 let invitedCardSet = null;
+                 for (let idx = 0; idx < userList.length; idx++) {
+                    invitedCardSet = new Set(userList[idx].invitedCardList);
+                    invitedCardSet.add(roomId);
+                    userList[idx].invitedCardList = [...invitedCardSet];
+                    await userList[idx].save();
+                 }
+                 return userList;
+            })(),
+            this.roomModel.findOneAndUpdate(
+                { $and: [{ _id: roomId }, { ownerId: tokenId }]},
+                { $addToSet: { inviteCardList: { $each: [ ...users ] } }},
+                { new: true }).populate({ path: 'inviteCardList', model: 'User', select: '_id sort username'})
+                .select('_id title ownerId ownerName userIdList inviteCardList'),
+        ]);
+
+        return room;
     }
 
 }

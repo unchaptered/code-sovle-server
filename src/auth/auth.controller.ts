@@ -102,10 +102,17 @@ export class AuthController {
 
     }
 
-    @UseGuards(JwtGuard)
+    @Get('/account/search')
+    getAccountByQuery(
+        @Query('email') email: string,
+        @Query('username') username: string
+    ) {
+        return this.authService.getAccountByQuery(email, username);
+    }
+
     @Get('/account/:_id')
     getAccountProfile( @Param() _id: string ) {
-
+        
         return this.authService.getAccountProfile(_id);
         
     }

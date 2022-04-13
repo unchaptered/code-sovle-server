@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import UserCardDto from "src/auth/dto/user.card.dto";
 import { RoomRepository } from "./room.repository";
 
 @Injectable()
@@ -9,6 +10,10 @@ export class RoomService {
         private roomRepository: RoomRepository,
         private jwtService: JwtService
     ) {}
+
+    async getRoomList() {
+        return this.roomRepository.getRoomList();
+    }
 
     async postRoom(token: string, title: string) {
 
@@ -35,5 +40,16 @@ export class RoomService {
         const result = await this.roomRepository.deleteRoom(ownerId, _id);
         
         return result;
+    }
+
+    async getRoomData(token: string, title: string) {
+        return this.roomRepository.getRoomData(title);
+    }
+    
+    async postInviteCard(token: string, _id:string, users:string[]) {
+
+        const user: any = this.jwtService.decode(token);
+        return this.roomRepository.postInviteCard(user._id, _id, users);
+
     }
 }

@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Headers, Logger, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import UserCardDto from 'src/auth/dto/user.card.dto';
 import { extractTokenFromBearer } from 'src/token/jwt.extract';
 import { JwtGuard } from 'src/token/jwt.guard';
 import { RoomService } from './room.service';
@@ -13,7 +14,9 @@ export class RoomController {
     constructor( private roomService: RoomService ) {}
 
     @Get('/')
-    getRoomList() { }
+    getRoomList() {
+        return this.roomService.getRoomList();
+    }
     
     @UseGuards(JwtGuard)
     @Post('/')
@@ -26,6 +29,15 @@ export class RoomController {
         this.roomLogger.log(`postRoom by token`);
         return this.roomService.postRoom(token, title);
 
+    }
+    @UseGuards(JwtGuard)
+    @Get('/:_id')
+    getRoomData(
+        @Headers('authorization') bearerToken: Object,
+        @Param('_id') _id: string
+    ) {
+        const token = extractTokenFromBearer(bearerToken);
+        return this.roomService.getRoomData(token, _id);
     }
     
     @UseGuards(JwtGuard)
@@ -55,12 +67,20 @@ export class RoomController {
         
     }
     
-    @Post('/')
-    requestInvitedCard() {
+    @UseGuards(JwtGuard)
+    @Post('/invite-card')
+    postInviteCard(
+        @Headers('authorization') bearerToken: Object,
+        @Body('_id') _id: string,
+        @Body('usersId') users: string[]
+    ) {
         // (오너만) 방이 사람에게 초대장을 보냅니다.
+        const token = extractTokenFromBearer(bearerToken);
+        return this.roomService.postInviteCard(token, _id, users);
+        
     }
     @Post('/')
-    responseInvitedCard() {
+    responseInviteCard() {
         // (모두가) 초대장을 
     }
     @Post('/')

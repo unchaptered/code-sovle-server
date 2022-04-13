@@ -22,11 +22,16 @@ export class User {
     @Prop({ type:String, required:true, minlength:8, maxlength:20 })
     password: string;
 
-    @Prop({ type:String, required:false, maxlength:300 })
+    @Prop({ type:String, default:'', required:false, maxlength:300 })
     description: string;
 
     @Prop([{ type:mongoose.Types.ObjectId, ref:'Room'}])
     roomList: string[];
+
+    @Prop([{ type:mongoose.Types.ObjectId, ref:'Room' }])
+    invitedCardList: string[];
+    @Prop([{ type:String }])
+    invitedNameList: string[];
     
 }
 export type UserDocument = User & Document & { _id:Object };

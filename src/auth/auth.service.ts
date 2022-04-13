@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
 import { JwtService } from "@nestjs/jwt";
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 
 import { AuthRepository } from './auth.repository';
@@ -62,11 +62,24 @@ export class AuthService {
         return { _id, sort, username:usernameVal };
         
     }
+    async getAccountByQuery(email: string, username: string) {
+        if (email !== undefined) {
+            return this.getAccountByEmail(email);
+        } else if (username !== undefined) {
+            return this.getAccountByUsername(username);
+        } else {
+            throw new BadRequestException('You must give us any email or username');
+        }
+    }
+    async getAccountByEmail(email: string) {
+        return this.authRepository.getAccountByEmail(email);
+    }
+    async getAccountByUsername(username: string) {
+        return this.authRepository.getAccountByUsername(username);
+    }
 
     async getAccountProfile(_id:string): Promise<Object> {
         const result =  this.authRepository.getAccountProfile(_id);
-
-        console.log(result);
 
         return result;
         

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model, Connection } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
@@ -24,7 +24,10 @@ export class AuthRepository {
         return await this.userModel.findByIdAndDelete(_id);
     }
     async createAccountToken(userProfileDto: UserProfileDto): Promise<UserDocument> {
-        return await this.userModel.findOne({ ...userProfileDto }).select('sort username');
+        const user = await this.userModel.findOne({ ...userProfileDto }).select('sort username');
+        if (user === null) throw new NotFoundException('No User');
+        
+        return user;
     }
     /** 토큰 필요 */
     async patchAccountSort(sort: UserSort, _id:string): Promise<UserDocument> {
@@ -39,7 +42,25 @@ export class AuthRepository {
         return await this.userModel.findByIdAndUpdate(_id, { description }, { new:true }).select('sort username');
     }
 
+    async getAccountByEmail(email: string): Promise<UserDocument> {
+        const user = await this.userModel.findOne({ email });
+        if (user === null) throw new NotFoundException('No User');
+
+        return user;
+    }
+
+    async getAccountByUsername(username: string): Promise<UserDocument[]> {
+        const regex=new RegExp("(.*)"+username+"(.*)");
+        const users = await this.userModel.find({ username: { $regex:regex }}).limit(30);
+        if (users.length === 0) throw new NotFoundException('No User');
+
+        return users;
+    }
+
     async getAccountProfile(_id: string): Promise<UserDocument> {
-        return await this.userModel.findById(_id).select('sort username description');
+        const user =  await this.userModel.findById(_id).select('sort username description');
+        if (user === null) throw new NotFoundException('No User');
+        
+        return user;
     }
 }
