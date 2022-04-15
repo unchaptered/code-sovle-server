@@ -29,8 +29,9 @@ export class User {
 
     @Prop([{ type:mongoose.Types.ObjectId, ref:'Room' }])
     invitedCardList: string[];
-    @Prop([{ type:String }])
-    invitedNameList: string[];
+
+    // @Prop([{ type:String }])
+    // invitedNameList: string[];
     
 }
 export type UserDocument = User & Document & { _id:Object };

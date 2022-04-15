@@ -24,17 +24,19 @@ export class Room {
     // Members Informations
     @Prop([{ type:mongoose.Types.ObjectId, ref: 'User' }])
     userIdList?: string[];
-    @Prop({ type:String })
-    userNameList?: string[];
+    // @Prop({ type:String })
+    // userNameList?: string[];
 
     // 보낸 초대장 (오너가 신청, 일반 멤버들이 신청), 안에는 _id 들어있음
     @Prop([{ type:mongoose.Types.ObjectId, ref: 'User'}])
     inviteCardList?: string[];
     
-    @Prop([String])
-    inviteNameList?: string[]; // 신청자 명단
+    // @Prop([String])
+    // inviteNameList?: string[]; // 신청자 명단
 
     // 후순위 개발항목
+    @Prop({ type:mongoose.Types.ObjectId, ref: 'User'})
+    passCardList?: string[];
 
     // 받은 입장권 (오너가 수락 가능, 일반 멤버들이 신청), 안에는 _id 들어있음
     // @Prop([{ type:mongoose.Types.ObjectId, ref:'User'}])
