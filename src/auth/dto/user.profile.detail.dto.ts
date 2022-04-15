@@ -1,6 +1,6 @@
 import { Schema } from "@nestjs/mongoose";
-import { IsString, IsEmail, IsNotEmpty, MinLength, MaxLength, Max } from "class-validator";
 import { PartialType } from '@nestjs/mapped-types';
+import { IsString, IsNotEmpty, MinLength, MaxLength } from "class-validator";
 
 import UserProfileDto from "./user.profile.dto";
 
@@ -14,7 +14,8 @@ export default class UserProfileDetailDto extends PartialType(UserProfileDto) {
     username:string;
 
     constructor({ email, password, username }) {
-        super({email, password});
+        super({ email, password });
+
         this.username = username;
     }
 
