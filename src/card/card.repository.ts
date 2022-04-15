@@ -121,4 +121,15 @@ export class CardRepository {
         return user;
     }
 
+    async postPassCard(userId: string, roomId: string) {
+        throw new ForbiddenException(`허용되지 않은 접근`);
+    }
+
+    async acceptPassCard(userId: string, roomId: string) {
+        throw new ForbiddenException(`허용되지 않은 접근`);
+    }
+
+    async denyPassCard(userId: string, roomId: string) {
+        throw new ForbiddenException(`허용되지 않은 접근`);
+    }
 }

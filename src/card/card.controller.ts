@@ -13,7 +13,7 @@ export class CardController {
     constructor( private cardService: CardService ) {}
 
     @UseGuards(JwtGuard)
-    @Post('/invite-card')
+    @Post('/send-invite-card')
     postInviteCard(
         @Headers('authorization') bearerToken: Object,
         @Body('_id') _id: string,
@@ -44,6 +44,42 @@ export class CardController {
         
         const token = extractTokenFromBearer(bearerToken);
         return this.cardService.denyInviteCard(token, roomIds);
+
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('/send-pass-card')
+    postPassCard(
+        @Headers('authorization') bearerToken: Object,
+        @Body('roomId') roomId: string
+    ) {
+
+        const token = extractTokenFromBearer(bearerToken);
+        return this.cardService.postPassCard(token, roomId);
+
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('/accept-pass-card')
+    acceptPassCard(
+        @Headers('authorization') bearerToken: Object,
+        @Body('roomId') roomId: string
+    ) {
+
+        const token = extractTokenFromBearer(bearerToken);
+        return this.cardService.acceptPassCard(token, roomId);
+
+    }
+
+    @UseGuards(JwtGuard)
+    @Post('/deny-pass-card')
+    denyPassCard(
+        @Headers('authorization') bearerToken: Object,
+        @Body('roomId') roomId: string
+    ) {
+
+        const token = extractTokenFromBearer(bearerToken);
+        return this.cardService.denyPassCard(token, roomId);
 
     }
 

@@ -33,4 +33,20 @@ export class CardService {
         return this.cardRepository.denyInviteCard(user._id, roomIds);
 
     }
+
+    async postPassCard(bearerToken: string, roomId: string) {
+
+        const user: any = this.jwtService.decode(bearerToken); 
+        return this.cardRepository.postPassCard(user._id, roomId);
+    }
+    async acceptPassCard(bearerToken: string, roomId: string) {
+
+        const user: any = this.jwtService.decode(bearerToken); 
+        return this.cardRepository.acceptPassCard(user._id, roomId);
+    }
+    async denyPassCard(bearerToken: string, roomId: string) {
+
+        const user: any = this.jwtService.decode(bearerToken); 
+        return this.cardRepository.denyPassCard(user._id, roomId);
+    }
 }
