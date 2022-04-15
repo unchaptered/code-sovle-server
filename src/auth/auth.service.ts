@@ -72,17 +72,20 @@ export class AuthService {
         }
     }
     async getAccountByEmail(email: string) {
+        
         return this.authRepository.getAccountByEmail(email);
+
     }
     async getAccountByUsername(username: string) {
+
         return this.authRepository.getAccountByUsername(username);
+
     }
 
     async getAccountProfile(_id:string): Promise<Object> {
-        const result =  this.authRepository.getAccountProfile(_id);
 
-        return result;
-        
+        return  this.authRepository.getAccountProfile(_id);
+
     }
 
 }

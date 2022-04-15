@@ -67,18 +67,17 @@ export class RoomController {
         
     }
     
-    @UseGuards(JwtGuard)
-    @Post('/invite-card')
-    postInviteCard(
-        @Headers('authorization') bearerToken: Object,
-        @Body('_id') _id: string,
-        @Body('usersId') users: string[]
-    ) {
-        // (오너만) 방이 사람에게 초대장을 보냅니다.
-        const token = extractTokenFromBearer(bearerToken);
-        return this.roomService.postInviteCard(token, _id, users);
-        
-    }
+    // @UseGuards(JwtGuard)
+    // @Post('/invite-card')
+    // postInviteCard(
+    //     @Headers('authorization') bearerToken: Object,
+    //     @Body('_id') _id: string,
+    //     @Body('usersId') users: string[]
+    // ) {
+    //     // (오너만) 방이 사람에게 초대장을 보냅니다.
+    //     const token = extractTokenFromBearer(bearerToken);
+    //     return this.roomService.postInviteCard(token, _id, users);
+    // }
     @Post('/')
     responseInviteCard() {
         // (모두가) 초대장을 

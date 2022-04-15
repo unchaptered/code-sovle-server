@@ -13,7 +13,6 @@ export class RoomRepository {
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
         @InjectModel(Room.name) private roomModel: Model<RoomDocument>,
-        @InjectConnection() private mongoose:Connection
     ) {}
 
     async getRoomList(): Promise<RoomDocument[]> {
@@ -74,33 +73,6 @@ export class RoomRepository {
         }
 
         // return roomDB;
-    }
-
-    async postInviteCard(tokenId: string, roomId: string, users: string[]): Promise<RoomDocument> {
-
-        const roomExists = await this.roomModel.exists({ _id:roomId, ownerId:tokenId });
-        if (roomExists === null) throw new ForbiddenException('No access right');
-        
-        const [ _users, room ] = await Promise.all([
-            (async ()=>{
-                 const userList = await this.userModel.find({ _id: { $in: [ ...users.map(val=>new Types.ObjectId(val)) ] }});
-                 let invitedCardSet = null;
-                 for (let idx = 0; idx < userList.length; idx++) {
-                    invitedCardSet = new Set(userList[idx].invitedCardList);
-                    invitedCardSet.add(roomId);
-                    userList[idx].invitedCardList = [...invitedCardSet];
-                    await userList[idx].save();
-                 }
-                 return userList;
-            })(),
-            this.roomModel.findOneAndUpdate(
-                { $and: [{ _id: roomId }, { ownerId: tokenId }]},
-                { $addToSet: { inviteCardList: { $each: [ ...users ] } }},
-                { new: true }).populate({ path: 'inviteCardList', model: 'User', select: '_id sort username'})
-                .select('_id title ownerId ownerName userIdList inviteCardList'),
-        ]);
-
-        return room;
     }
 
 }

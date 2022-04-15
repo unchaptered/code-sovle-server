@@ -11,13 +11,15 @@ import { JwtStrategy } from '../token/jwt.strategy';
 import { jwtModuleAsyncOptions } from 'src/setting/jwt.async.options';
 
 import { User, UserSchema } from 'src/schema/user.schema';
+import { Room, RoomSchema } from 'src/schema/room.schema';
 
 @Module({
   imports: [
     ConfigModule,
     JwtModule.registerAsync(jwtModuleAsyncOptions),
     MongooseModule.forFeature([
-        { name: User.name, schema: UserSchema }
+      { name: User.name, schema: UserSchema },
+      { name: Room.name, schema: RoomSchema }
     ]),
   ],
   controllers: [ AuthController ],

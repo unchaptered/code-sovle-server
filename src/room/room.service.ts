@@ -46,10 +46,4 @@ export class RoomService {
         return this.roomRepository.getRoomData(title);
     }
     
-    async postInviteCard(token: string, _id:string, users:string[]) {
-
-        const user: any = this.jwtService.decode(token);
-        return this.roomRepository.postInviteCard(user._id, _id, users);
-
-    }
 }

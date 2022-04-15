@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Model, Connection } from 'mongoose';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Model, Connection, Types } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
 import { User, UserDocument } from '../schema/user.schema';
@@ -7,12 +7,14 @@ import { User, UserDocument } from '../schema/user.schema';
 import UserSort from './dto/user.sort.enum';
 import UserProfileDto from './dto/user.profile.dto';
 import UserProfileDetailDto from './dto/user.profile.detail.dto';
+import { Room, RoomDocument } from 'src/schema/room.schema';
 
 @Injectable()
 export class AuthRepository {
 
     constructor(
-        @InjectModel(User.name) private userModel: Model<UserDocument>
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
+        @InjectModel(Room.name) private roomModel: Model<RoomDocument>,
     ) {}
 
     async createAccount(userProfileDetailDto: UserProfileDetailDto): Promise<UserDocument> {
@@ -57,9 +59,12 @@ export class AuthRepository {
     }
 
     async getAccountProfile(_id: string): Promise<UserDocument> {
-        const user =  await this.userModel.findById(_id).select('sort username description');
+        const user =  await this.userModel.findById(_id)
+            .populate({ path:'invitedCardList', model:'Room', select:'_id title ownerId ownerName'})
+            .select('sort username description invitedCardList');
         if (user === null) throw new NotFoundException('No User');
         
         return user;
     }
+
 }

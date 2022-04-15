@@ -12,6 +12,7 @@ import { RoomModule } from './room/room.module';
 import { JwtStrategy } from './token/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtModuleAsyncOptions } from './setting/jwt.async.options';
+import { CardModule } from './card/card.module';
 
 @Module({
   imports: [
@@ -23,8 +24,12 @@ import { jwtModuleAsyncOptions } from './setting/jwt.async.options';
     MongooseModule.forRoot(process.env.ATLAS_URL),
     ThrottlerModule.forRootAsync(throttlerAsyncOptions),
 
+    // Secure
+    JwtStrategy,
+
     // Domain
-    AuthModule, RoomModule, JwtStrategy
+    AuthModule, RoomModule, CardModule,
+
   ],
   providers: [
     {
