@@ -1,7 +1,6 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose from "mongoose";
-import UserSort from "src/auth/dto/user.sort.enum";
-
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
+import UserSort from '../auth/dto/user.sort.enum';
 
 
 @Schema({ timestamps: true })

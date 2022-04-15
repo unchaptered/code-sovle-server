@@ -5,7 +5,7 @@ import { InjectModel } from "@nestjs/mongoose";
 
 import { AuthRepository } from './auth.repository';
 
-import { User, UserDocument } from "src/schema/user.schema";
+import { User, UserDocument } from "../schema/user.schema";
 
 import UserSort from "./dto/user.sort.enum";
 import UserProfileDto from "./dto/user.profile.dto";

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model, Connection } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 
-import { User, UserDocument } from 'src/schema/user.schema';
+import { User, UserDocument } from '../schema/user.schema';
 
 import UserSort from './dto/user.sort.enum';
 import UserProfileDto from './dto/user.profile.dto';
@@ -12,8 +12,7 @@ import UserProfileDetailDto from './dto/user.profile.detail.dto';
 export class AuthRepository {
 
     constructor(
-        @InjectModel(User.name) private userModel: Model<UserDocument>,
-        @InjectConnection() private mongoose: Connection
+        @InjectModel(User.name) private userModel: Model<UserDocument>
     ) {}
 
     async createAccount(userProfileDetailDto: UserProfileDetailDto): Promise<UserDocument> {
