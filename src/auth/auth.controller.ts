@@ -1,109 +1,120 @@
-import { BadRequestException, Body, Controller, Get, Param, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
-import { RegexUtility } from 'src/utility/regex.utility';
+import {
+    Controller, Get, Post, Patch, Delete,
+    Body, Logger, Query, UseGuards, Headers, Param
+} from '@nestjs/common';
+
+// dependency inejection
+
 import { AuthService } from './auth.service';
 
-import JoinDto from './dto/join.dto';
-import LoginDto from './dto/login.dto';
+// dto
 
-import UserProfile from './classes/user.profile';
+import UserSort from './dto/user.sort.enum';
+import UserProfileDto from './dto/user.profile.dto';
+import UserProfileDetailDto from './dto/user.profile.detail.dto';
+
+// docs
+
+import { UserDocument } from 'src/user/schema/user.schema';
+
+// pipe
+
 import UserSortValidatioPipe from './pipe/user.sort.pipe';
+import UsernameValidationPipe from './pipe/user.name.pipe';
+import UserProfileValidationPipe from './pipe/user.profile.pipe';
+import UserProfileDetailValidationPipe from './pipe/user.profile.detail.pipe';
 
-import { UserSort } from './types/user.sort.enum';
+import { JwtGuard } from '../token/jwt.guard';
+import { ConfigService } from '@nestjs/config';
+
+// guard
+
+import { extractTokenFromBearer } from 'src/token/jwt.extract';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import DescriptionValidationPipe from './pipe/user.description.pipe';
 
-
-/**
- * @AuthController
- * 
- * @URL **GET /auth/** sort, email, password
- * @function login() 
- * 
- * @URL **POST /auth/** sort, email, username, password
- * @function join()
- * 
- * @URL **GET /auth/list**
- * @function getAllUserByOptions()
- * 
- * @URL **GET /auth/:email**
- * @function findUserByEmail()
- */
 @Controller('auth')
 @UseGuards(ThrottlerGuard)
 export class AuthController {
-    
-    constructor( private authService: AuthService )  {}
 
-    /**
-     * @UserSortValidationPipe 커스텀 파이프라인을 이용해서 유효성 검사를 진행한다.
-     * @ValidationPipe class-validator 기능을 이용해서 유효성 검사를 진행한다.
-     * 
-     * @param sort 열거형 UserSort
-     * @param joinDto 클래스 JoinDto
-     * @returns Promise<UserProfile\>
-     */
-    @Post('/')
-    login( @Body('sort', UserSortValidatioPipe) sort: UserSort, @Body(ValidationPipe) joinDto: JoinDto ): Promise<UserProfile> {
-        return this.authService.join(sort, joinDto);
-    }
+    private authLogger: Logger = new Logger('AuthController');
 
-    /**
-     * @UserSortValidatioPipe 커스텀 파이프라인을 이용해서 유효성 검사를 진행한다.
-     * @ValidationPipe class-validator 기능을 이용해서 유효성 검사를 진행한다.
-     * 
-     * @param sort 열거형 UserSort, UserSortValidatioPipe 을 이용한다.
-     * @param loginDto 클래스 LoginDto, ValidationPipe 와 class-validator 를 이용한다.
-     * @returns Promise<UserProfile\>
-     */
+    constructor( private authService: AuthService, private configService: ConfigService ) {}
+
     @Get('/')
-    join( @Body('sort', UserSortValidatioPipe) sort: UserSort, @Body(ValidationPipe) loginDto: LoginDto ): Promise<UserProfile> {
-        return this.authService.login(sort, loginDto);
+    getApiDocs() {
+        return 'hello';
     }
 
-    /**
-     * @RegexUtiltiy 정적으로 생성된 이메일 유효성 검사 정규식으로 유효성 검사를 진행한다.
-     * 
-     * @param email 문자열 email, RegexUtiltiy 을 이용한다.
-     * @returns Promise<Boolean\>
-     */
-    @Get('/:email')
-    findUserByEmail(@Param('email') email: string): Promise<Boolean> {
-        const result = email.match(RegexUtility.emailRegex);
-        if (result === null) throw new BadRequestException(`${email} isnt' in the Email Format`);
-        return this.authService.findUserByEmail(email);
+    @Post('/account')
+    createAccount( @Body(UserProfileDetailValidationPipe) userProfileDetailDto: UserProfileDetailDto ): Promise<UserDocument> {
+
+        this.authLogger.log(`createAccount ${JSON.stringify(userProfileDetailDto)}`);
+        return this.authService.createAccount(userProfileDetailDto);
+
     }
 
-    /**
-     * 동적 쿼리문을 실행하기 앞서, 유저
-     * 
-     * @ParseIntPipe nest 내장 모듈로 숫자형인지를 확인한다.
-     * 
-     * @param sort 열거형 UserSort 을 받고 유효성 검사를 진행하고, 길이 0~2 사이의 배열로 만들어서 Service 에 전달한다.
-     * @param limit 숫자를 받고 ParseIntPipe 를 실행하고, 1부터 30까지의 숫자만 받는 것은 Service 에서 처리한다.
-     * @returns 
-     */
-    @Get('/list')
-    getAllUserByOptions(
-        @Query('sort') sort: UserSort[], @Query('limit', ParseIntPipe) limit: number ): Promise<UserProfile[]> {
-        
-        // Manual Validation Checking
-        if (sort !== undefined) {
-            if (typeof sort === 'object') {
+    @UseGuards(JwtGuard)
+    @Delete('/account')
+    deleteAccount( @Headers('authorization') bearerToken: Object ): Object {
 
-                // 2 개 이상의 sort 가 왔을 때
-                const sortPipe = new UserSortValidatioPipe();
-                sort.forEach(val => sortPipe.transform(val));
+        const token = extractTokenFromBearer(bearerToken);
+        this.authLogger.log(`deleteAccount by token`);
+        return this.authService.deleteAccount(token);
 
-            } else {
+    }
 
-                // 단수의 sort 가 왔을 때
-                new UserSortValidatioPipe().transform(sort);
-                sort = [sort];
+    @Post('/account/token')
+    createAccountToken( @Body(UserProfileValidationPipe) userProfileDto: UserProfileDto ): Promise<Object> {
 
-            }
-        } else {}
-        
-        return this.authService.getAllUserByOptions(sort, limit);
+        this.authLogger.log(`createAccountToken ${JSON.stringify(userProfileDto)}`);
+        return this.authService.createAccountToken(userProfileDto);
+
+    }
+
+    @UseGuards(JwtGuard)
+    @Patch('/account/sort')
+    patchAccountSort( @Query('set', UserSortValidatioPipe) sort: UserSort, @Headers('authorization') bearerToken: Object ): Object {
+
+        const token = extractTokenFromBearer(bearerToken);
+        this.authLogger.log(`patchAccountSort by token`);
+        return this.authService.patchAccountSort(sort, token);
+
     }
     
-}
+    @UseGuards(JwtGuard)
+    @Patch('/account/username')
+    patchAccountUsername( @Query('set', UsernameValidationPipe) username: string, @Headers('authorization') bearerToken: Object): Object {
 
+        const token = extractTokenFromBearer(bearerToken);
+        this.authLogger.log(`patchAccountUsername by token`);
+        return this.authService.patchAccountUsername(username, token);
+        
+    }
+
+    @UseGuards(JwtGuard)
+    @Patch('/account/description')
+    patchAccountDescription( @Body('description', DescriptionValidationPipe) description: string, @Headers('authorization') bearerToken: Object ): Object {
+        
+        const token = extractTokenFromBearer(bearerToken);
+        this.authLogger.log(`patchAccountDescription by token`);
+        return this.authService.patchAccountDescription(description, token);
+
+    }
+
+    @Get('/account/search')
+    getAccountByQuery(
+        @Query('email') email: string,
+        @Query('username') username: string
+    ) {
+        return this.authService.getAccountByQuery(email, username);
+    }
+
+    @Get('/account/:_id')
+    getAccountProfile( @Param() _id: string ) {
+        
+        return this.authService.getAccountProfile(_id);
+        
+    }
+
+}

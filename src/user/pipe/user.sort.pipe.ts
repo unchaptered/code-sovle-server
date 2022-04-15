@@ -1,5 +1,6 @@
-import {  BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import UserSort from '../dto/user.sort.enum';
+import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import UserSort from '../types/user.sort.enum';
+
 
 /**
  * @readonly UserSortArray 열거형 UserSort 를 배열의 형태로 전환시켰습니다.
@@ -20,10 +21,12 @@ export default class UserSortValidatioPipe implements PipeTransform {
     // transform(value: any, metadata: ArgumentMetadata) {}
     transform(value: any): string {
         
-        const valueString = (""+value).toUpperCase();
-        if (this.isExsistentUserSort(valueString)) throw new BadRequestException(`This ${valueString} isnt' in the UserSort options`);
+        value = (""+value).toUpperCase();
+        if (this.isExsistentUserSort(value)) {
+            throw new BadRequestException(`${value} isnt' in the UserSort options`);
+        }
 
-        return valueString;
+        return value;
 
     }
 

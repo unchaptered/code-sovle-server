@@ -1,32 +1,28 @@
 import { Module } from '@nestjs/common';
+import { JwtModule, } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './schema/user.schema';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AuthRepository } from './auth.repository';
 
+import { JwtStrategy } from '../token/jwt.strategy';
+import { jwtModuleAsyncOptions } from 'src/setting/jwt.async.options';
 
-/**
- * @AuthModule
- * 
- * @import MongooseModule.forFeatureAsync([]); // 참고용 메서드
- * @import MongooseModule.forFeature([]); // UserModel 생성
- * 
- * @AuthController mapping
- * @AuthService inejection
- */
+import { User, UserSchema } from 'src/schema/user.schema';
+import { Room, RoomSchema } from 'src/schema/room.schema';
+
 @Module({
   imports: [
-    MongooseModule.forFeatureAsync([
-      { name:User.name, useFactory: () =>{
-        const schema = UserSchema;
-        schema.pre('save', function() { console.log('Hello I Saved! ')});
-        return schema;
-      }}
+    ConfigModule,
+    JwtModule.registerAsync(jwtModuleAsyncOptions),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Room.name, schema: RoomSchema }
     ]),
-    MongooseModule.forFeature([ { name: User.name, schema: UserSchema } ])
   ],
-  controllers: [AuthController],
-  providers: [AuthService]
+  controllers: [ AuthController ],
+  providers: [ AuthService, AuthRepository, JwtStrategy ]
 })
 export class AuthModule {}

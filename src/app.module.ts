@@ -2,12 +2,17 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
-import { AuthModule } from './auth/auth.module';
 
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { throttlerAsyncOptions } from './secure/throttler.async.options';
-import { HelloController } from './hello/hello.controller';
+
+import { throttlerAsyncOptions } from './setting/throttler.async.options';
+
+import { AuthModule } from './auth/auth.module';
+import { RoomModule } from './room/room.module';
+import { JwtStrategy } from './token/jwt.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtModuleAsyncOptions } from './setting/jwt.async.options';
+import { CardModule } from './card/card.module';
 
 @Module({
   imports: [
@@ -18,14 +23,19 @@ import { HelloController } from './hello/hello.controller';
     }),
     MongooseModule.forRoot(process.env.ATLAS_URL),
     ThrottlerModule.forRootAsync(throttlerAsyncOptions),
-    AuthModule
+
+    // Secure
+    JwtStrategy,
+
+    // Domain
+    AuthModule, RoomModule, CardModule,
+
   ],
-  controllers: [AppController, HelloController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard
     }
-  ],
+  ]
 })
 export class AppModule {}
